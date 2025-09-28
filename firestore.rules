@@ -20,5 +20,18 @@ service cloud.firestore {
       allow delete: if request.auth != null 
         && request.auth.uid == resource.data.authorId;
     }
+    
+    // Comments collection rules
+    match /comments/{document} {
+      // Anyone can read comments
+      allow read: if true;
+      
+      // Only authenticated users can create comments
+      allow create: if request.auth != null;
+      
+      // Only comment author can update/delete their comments
+      allow update, delete: if request.auth != null 
+        && request.auth.uid == resource.data.authorId;
+    }
   }
 }

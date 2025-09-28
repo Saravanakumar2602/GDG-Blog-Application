@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { doc, getDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { db, auth } from '../firebase';
+import Comments from '../components/Comments';
 
 const BlogDetail = () => {
   const { id } = useParams();
@@ -149,6 +150,8 @@ const BlogDetail = () => {
             </p>
           ))}
         </div>
+        
+        <Comments blogId={id} />
       </article>
     </div>
   );

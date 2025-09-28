@@ -8,6 +8,7 @@ const MyBlogs = () => {
   const [user] = useAuthState(auth);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [commentCounts, setCommentCounts] = useState({});
 
   const calculateReadingTime = (content) => {
     const wordsPerMinute = 200;
@@ -34,6 +35,22 @@ const MyBlogs = () => {
         
         const myBlogs = allBlogs.filter(blog => blog.authorId === user.uid);
         setBlogs(myBlogs);
+        
+        // Fetch comment counts
+        const counts = {};
+        for (const blog of myBlogs) {
+          try {
+            const commentsQuery = query(
+              collection(db, 'comments'),
+              where('blogId', '==', blog.id)
+            );
+            const commentsSnapshot = await getDocs(commentsQuery);
+            counts[blog.id] = commentsSnapshot.size;
+          } catch (error) {
+            counts[blog.id] = 0;
+          }
+        }
+        setCommentCounts(counts);
       } catch (error) {
         console.error('Error fetching my blogs:', error);
       } finally {
@@ -60,16 +77,17 @@ const MyBlogs = () => {
           {blogs.map(blog => {
             const readingTime = calculateReadingTime(blog.content);
             const likeCount = blog.likes?.length || 0;
+            const commentCount = commentCounts[blog.id] || 0;
             
             return (
               <div key={blog.id} className="blog-card">
                 <h2>{blog.title}</h2>
                 <div className="blog-meta">
-                  <div>
+                  <div style={{flex: 1}}>
                     <p>{blog.createdAt?.toDate().toLocaleDateString()}</p>
-                    <p style={{color: '#667eea', fontWeight: '500'}}>{readingTime} min read</p>
+                    <p style={{color: '#667eea', fontWeight: '500', marginTop: '0.25rem'}}>{readingTime} min read</p>
                   </div>
-                  <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#718096'}}>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#718096', padding: '0.5rem'}}>
                     <span style={{fontSize: '1.2rem'}}>❤️</span>
                     <span>{likeCount}</span>
                   </div>
@@ -77,9 +95,17 @@ const MyBlogs = () => {
                 <div className="blog-content">
                   {blog.content.substring(0, 150)}...
                 </div>
-                <div style={{display: 'flex', gap: '1rem', marginTop: '1rem', alignItems: 'center'}}>
-                  <Link to={`/blog/${blog.id}`} className="read-more">View</Link>
-                  <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal'}}>Edit</Link>
+                <div style={{marginTop: '1rem'}}>
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#718096', fontSize: '0.9rem'}}>
+                      <span>💬</span>
+                      <span>{commentCount} {commentCount === 1 ? 'comment' : 'comments'}</span>
+                    </div>
+                  </div>
+                  <div style={{display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap'}}>
+                    <Link to={`/blog/${blog.id}`} className="read-more" style={{flex: '1', minWidth: '120px', textAlign: 'center'}}>View</Link>
+                    <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal', flex: '1', minWidth: '120px'}}>Edit</Link>
+                  </div>
                 </div>
               </div>
             );
