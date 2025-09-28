@@ -10,8 +10,14 @@ service cloud.firestore {
       allow create: if request.auth != null 
         && request.auth.uid == request.resource.data.authorId;
       
-      // Only the author can update or delete their blogs
-      allow update, delete: if request.auth != null 
+      // Author can update/delete their blogs, anyone can update likes
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.authorId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
+      );
+      
+      // Only the author can delete their blogs
+      allow delete: if request.auth != null 
         && request.auth.uid == resource.data.authorId;
     }
   }

@@ -9,6 +9,13 @@ const MyBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const calculateReadingTime = (content) => {
+    const wordsPerMinute = 200;
+    const words = content.split(' ').length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return minutes;
+  };
+
   useEffect(() => {
     if (!user) {
       setLoading(false);
@@ -21,7 +28,8 @@ const MyBlogs = () => {
         const querySnapshot = await getDocs(allBlogsQuery);
         const allBlogs = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          likes: doc.data().likes || []
         }));
         
         const myBlogs = allBlogs.filter(blog => blog.authorId === user.uid);
@@ -49,21 +57,33 @@ const MyBlogs = () => {
         </div>
       ) : (
         <div className="blog-grid">
-          {blogs.map(blog => (
-            <div key={blog.id} className="blog-card">
-              <h2>{blog.title}</h2>
-              <div className="blog-meta">
-                <p>{blog.createdAt?.toDate().toLocaleDateString()}</p>
+          {blogs.map(blog => {
+            const readingTime = calculateReadingTime(blog.content);
+            const likeCount = blog.likes?.length || 0;
+            
+            return (
+              <div key={blog.id} className="blog-card">
+                <h2>{blog.title}</h2>
+                <div className="blog-meta">
+                  <div>
+                    <p>{blog.createdAt?.toDate().toLocaleDateString()}</p>
+                    <p style={{color: '#667eea', fontWeight: '500'}}>{readingTime} min read</p>
+                  </div>
+                  <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#718096'}}>
+                    <span style={{fontSize: '1.2rem'}}>❤️</span>
+                    <span>{likeCount}</span>
+                  </div>
+                </div>
+                <div className="blog-content">
+                  {blog.content.substring(0, 150)}...
+                </div>
+                <div style={{display: 'flex', gap: '1rem', marginTop: '1rem', alignItems: 'center'}}>
+                  <Link to={`/blog/${blog.id}`} className="read-more">View</Link>
+                  <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal'}}>Edit</Link>
+                </div>
               </div>
-              <div className="blog-content">
-                {blog.content.substring(0, 150)}...
-              </div>
-              <div style={{display: 'flex', gap: '1rem', marginTop: '1rem', alignItems: 'center'}}>
-                <Link to={`/blog/${blog.id}`} className="read-more">View</Link>
-                <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal'}}>Edit</Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
