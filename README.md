@@ -1,70 +1,135 @@
-# Getting Started with Create React App
+# Blog Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack blog application built with React and Firebase for the GDG Web Application Selection Task.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### Core Features
+- ✅ Homepage displaying list of blog posts
+- ✅ Individual blog post view with title, author, date, and content
+- ✅ Add new blog post functionality
+- ✅ User authentication (Sign up, Login, Logout)
+- ✅ Edit/Delete blog posts (only by author)
+- ✅ Responsive design
+- ✅ Firebase Firestore for data persistence
 
-### `npm start`
+### Tech Stack
+- **Frontend**: React, React Router DOM
+- **Backend**: Firebase (Firestore + Authentication)
+- **Styling**: TailwindCSS
+- **State Management**: React Hooks + Firebase Hooks
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Setup Instructions
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 1. Clone and Install Dependencies
+```bash
+cd blog-app
+npm install
+```
 
-### `npm test`
+### 2. Firebase Configuration
+1. Create a Firebase project at https://console.firebase.google.com/
+2. Enable Firestore Database and Authentication (Email/Password)
+3. Get your Firebase config from Project Settings
+4. Update `src/firebase.js` with your Firebase configuration:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```javascript
+const firebaseConfig = {
+  apiKey: "your-api-key",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+};
+```
 
-### `npm run build`
+### 3. Firestore Security Rules
+Add these rules to your Firestore:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /blogs/{document} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == resource.data.authorId;
+    }
+  }
+}
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 4. Run the Application
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Project Structure
+```
+src/
+├── components/
+│   └── Navbar.js          # Navigation component
+├── pages/
+│   ├── Home.js            # Homepage with blog list
+│   ├── BlogDetail.js      # Individual blog view
+│   ├── AddBlog.js         # Add/Edit blog form
+│   └── Auth.js            # Login/Signup page
+├── firebase.js            # Firebase configuration
+└── App.js                 # Main app with routing
+```
 
-### `npm run eject`
+## Firebase Operations Used
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Firestore CRUD Operations
+- `getDocs()` - Fetch all blogs
+- `getDoc()` - Fetch single blog
+- `addDoc()` - Create new blog
+- `updateDoc()` - Update existing blog
+- `deleteDoc()` - Delete blog
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Authentication
+- `createUserWithEmailAndPassword()` - User registration
+- `signInWithEmailAndPassword()` - User login
+- `signOut()` - User logout
+- `useAuthState()` - Monitor auth state
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Deployment
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Deploy to Netlify
+1. Build the project: `npm run build`
+2. Deploy the `build` folder to Netlify
+3. Set up environment variables if needed
 
-## Learn More
+### Deploy to Vercel
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run: `vercel`
+3. Follow the prompts
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Features Implemented
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+✅ **Core Requirements**
+- Homepage with blog list
+- Individual blog post view
+- Add new blog functionality
+- User authentication
+- Edit/Delete posts (author only)
+- Responsive design
+- Database persistence
 
-### Code Splitting
+✅ **Bonus Features**
+- User authentication with Firebase Auth
+- Author-only edit/delete permissions
+- Responsive TailwindCSS design
+- Real-time data with Firestore
+- Proper error handling
+- Loading states
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Security Features
+- Authentication required for creating/editing blogs
+- Author-only permissions for edit/delete
+- Firestore security rules
+- Input validation and sanitization
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Author
+Built for GDG Web Application Selection Task
