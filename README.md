@@ -9,7 +9,7 @@ A modern, full-stack blog application built with React and Firebase for the GDG 
 
 ## 📸 Screenshots
 ![Homepage](<img width="1919" height="928" alt="image" src="https://github.com/user-attachments/assets/8e39b83d-644c-4609-b53f-747edfe5aaa8" />
-)
+
 *Modern homepage with search functionality and like system*
 
 ![Blog Detail](<img width="1918" height="924" alt="image" src="https://github.com/user-attachments/assets/d25e9564-cd03-4e65-be37-37b527bbdf81" />
