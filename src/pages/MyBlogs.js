@@ -17,7 +17,6 @@ const MyBlogs = () => {
 
     const fetchMyBlogs = async () => {
       try {
-        // First try to get all blogs and filter client-side
         const allBlogsQuery = collection(db, 'blogs');
         const querySnapshot = await getDocs(allBlogsQuery);
         const allBlogs = querySnapshot.docs.map(doc => ({
@@ -25,13 +24,8 @@ const MyBlogs = () => {
           ...doc.data()
         }));
         
-        // Filter by current user
         const myBlogs = allBlogs.filter(blog => blog.authorId === user.uid);
         setBlogs(myBlogs);
-        
-        console.log('Current user ID:', user.uid);
-        console.log('All blogs:', allBlogs);
-        console.log('My blogs:', myBlogs);
       } catch (error) {
         console.error('Error fetching my blogs:', error);
       } finally {
@@ -64,9 +58,9 @@ const MyBlogs = () => {
               <div className="blog-content">
                 {blog.content.substring(0, 150)}...
               </div>
-              <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+              <div style={{display: 'flex', gap: '1rem', marginTop: '1rem', alignItems: 'center'}}>
                 <Link to={`/blog/${blog.id}`} className="read-more">View</Link>
-                <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.5rem 1rem', fontSize: '0.875rem'}}>Edit</Link>
+                <Link to={`/edit-blog/${blog.id}`} className="btn btn-primary" style={{padding: '0.75rem 1.5rem', fontSize: '0.9rem', textTransform: 'none', letterSpacing: 'normal'}}>Edit</Link>
               </div>
             </div>
           ))}

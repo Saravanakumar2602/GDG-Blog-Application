@@ -20,8 +20,7 @@ const Navbar = () => {
           {user ? (
             <>
               <Link to="/my-blogs">My Blogs</Link>
-              <Link to="/add-blog">Add Blog</Link>
-              <span>Welcome, {user.email}</span>
+              <Link to="/add-blog">+ Add</Link>
               <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
